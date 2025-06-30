@@ -5,33 +5,38 @@ const bookSchema = new Schema<IBook>(
       {
             title: {
                   type: String,
-                  required: true,
+                  required: [true, "Title is required!"],
                   trim: true
             },
             author: {
                   type: String,
-                  required: true,
+                  required: [true, "Author name is required!"],
                   trim: true
             },
             genre: {
                   type: String,
-                  required: true,
-
-                  enum: ["FICTION", "NON_FICTION", "SCIENCE", "HISTORY", "BIOGRAPHY", "FANTASY"]
+                  required: [true, "Genre is required!"],
+                  uppercase: true,
+                  enum: {
+                        values: ["FICTION", "NON_FICTION", "SCIENCE",
+                              "HISTORY", "BIOGRAPHY", "FANTASY"],
+                        message: "{VALUE} is not valid genre."
+                  }
             },
             description: {
                   type: String,
-                  trim: true
+                  trim: true,
+                  default: ""
             },
             isbn: {
                   type: String,
-                  required: true,
-                  unique: true
+                  unique: [true, "This isbn number is already exist"],
+                  required: [true, "Isbn number required!"]
             },
             copies: {
                   type: Number,
                   required: true,
-                  min: 0
+                  min: [1, "Add minimum copies atleast 1"]
             },
             available: {
                   type: Boolean,

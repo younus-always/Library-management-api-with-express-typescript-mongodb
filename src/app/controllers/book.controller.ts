@@ -4,16 +4,18 @@ import Book from "../modules/book.model";
 export const bookRoute = Router()
 
 
+// create book
 bookRoute.post('/', async (req: Request, res: Response) => {
       try {
             const { body } = req
-            const books = new Book(body)
-            await books.save()
+            // const book = new Book(body)
+            // await book.save()
+            const book = await Book.create(body)
 
             res.status(200).send({
                   success: true,
                   message: "Book created successfuly",
-                  data: books
+                  data: book
             })
       } catch (error: any) {
             res.status(400).send({
@@ -23,10 +25,32 @@ bookRoute.post('/', async (req: Request, res: Response) => {
             })
       }
 })
-
+// get all books
 bookRoute.get('/', async (req: Request, res: Response) => {
       try {
-            const books = await Book.find()
+            const { filter, sortBy, sort, limit } = req.query
+            console.log({ filter, sortBy, sort, limit })
+
+            let books: any = []
+
+            // filter by genre
+            const query: any = filter ? { genre: filter } : {}
+            // sorting ascending and descending by createdAt
+            const sortOptions: any = sortBy && typeof sortBy === 'string'
+                  ? { sortBy: sort === 'desc' ? -1 : 1 } : {}
+            // ✅ Safely parse and narrow limit
+            const limitNum =
+                  typeof limit === 'string' && !isNaN(Number(limit))
+                        ? parseInt(limit, 10)
+                        : undefined;
+
+
+            // if query exist then return
+            if (filter || sortBy || limitNum !== undefined) {
+                  books = await Book.find(query).sort(sortOptions).limit(limitNum ?? 0)
+            } else {
+                  books = await Book.find()
+            }
 
             res.status(200).send({
                   success: true,
@@ -41,7 +65,7 @@ bookRoute.get('/', async (req: Request, res: Response) => {
             })
       }
 })
-
+// get single book by id
 bookRoute.get('/:bookId', async (req: Request, res: Response) => {
       try {
             const { bookId } = req.params
@@ -60,12 +84,12 @@ bookRoute.get('/:bookId', async (req: Request, res: Response) => {
             })
       }
 })
-
+// update book
 bookRoute.patch('/:bookId', async (req: Request, res: Response) => {
       try {
             const { bookId } = req.params
             const updatedData = req.body
-            const book = await Book.findByIdAndUpdate(bookId, updatedData)
+            const book = await Book.findByIdAndUpdate(bookId, updatedData, { new: true })
 
             res.status(200).send({
                   success: true,
@@ -80,7 +104,7 @@ bookRoute.patch('/:bookId', async (req: Request, res: Response) => {
             })
       }
 })
-
+// delete book
 bookRoute.delete('/:bookId', async (req: Request, res: Response) => {
       try {
             const { bookId } = req.params
