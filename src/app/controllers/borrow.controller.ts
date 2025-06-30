@@ -1,9 +1,9 @@
 import { Request, Response, Router } from "express";
-import app from "../../main";
 import Borrow from "../modules/borrow.model";
 
 export const borrowRoute = Router()
 
+// create borrow book by reference using book ObjectId
 borrowRoute.post('/', async (req: Request, res: Response) => {
       try {
             const { body } = req
@@ -22,14 +22,15 @@ borrowRoute.post('/', async (req: Request, res: Response) => {
             })
       }
 })
+// Retrived all borrowed books and book details using aggrregate populate()
 borrowRoute.get('/', async (req: Request, res: Response) => {
       try {
-            const borrows = await Borrow.find()
+            const borrowBooks = await Borrow.find().populate("book")
 
             res.status(200).send({
                   success: true,
                   message: "Borrowed books summary retrieved successfully",
-                  data: borrows
+                  data: borrowBooks
             })
       } catch (error: any) {
             res.status(400).send({

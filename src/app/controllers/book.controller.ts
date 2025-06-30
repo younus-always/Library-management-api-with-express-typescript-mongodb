@@ -29,7 +29,6 @@ bookRoute.post('/', async (req: Request, res: Response) => {
 bookRoute.get('/', async (req: Request, res: Response) => {
       try {
             const { filter, sortBy, sort, limit } = req.query
-            console.log({ filter, sortBy, sort, limit })
 
             let books: any = []
 
@@ -109,7 +108,6 @@ bookRoute.delete('/:bookId', async (req: Request, res: Response) => {
       try {
             const { bookId } = req.params
             const book = await Book.findByIdAndDelete(bookId)
-            console.log(book)
 
             res.status(200).send({
                   success: true,
