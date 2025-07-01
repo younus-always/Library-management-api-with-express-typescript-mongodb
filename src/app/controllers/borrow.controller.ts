@@ -1,15 +1,28 @@
 import { Request, Response, Router } from "express";
-import Borrow from "../modules/borrow.model";
+import Borrow from "../models/borrow.model";
+import Book from "../models/book.model";
 
 export const borrowRoute = Router()
 
 // create borrow book by reference using book ObjectId
 borrowRoute.post('/', async (req: Request, res: Response) => {
       try {
-            const { body } = req
-            const borrow = await Borrow.create(body)
+            const { book: bookId, quantity } = req.body
+            // const borrow = await Borrow.create(body)
+            //1. Find the book
+            const book = await Book.findById(bookId)
+            if (!book) throw new Error("Book not found")
 
-            res.status(200).send({
+            // 2. Check and update the book copies
+            await (book as any).reduceCopies(quantity)
+
+            // 3. Save the borrow record
+            const borrow = await Borrow.create({
+                  book: bookId,
+                  quantity
+            })
+
+            res.status(201).send({
                   success: true,
                   message: "Book borrowed successfully",
                   data: borrow
@@ -25,7 +38,31 @@ borrowRoute.post('/', async (req: Request, res: Response) => {
 // Retrived all borrowed books and book details using aggrregate populate()
 borrowRoute.get('/', async (req: Request, res: Response) => {
       try {
-            const borrowBooks = await Borrow.find().populate("book")
+            const borrowBooks = await Borrow.aggregate([
+                  {
+                        $lookup: {
+                              from: "books",
+                              localField: "book",
+                              foreignField: "_id",
+                              as: "borrowedBook"
+                        }
+                  }, {
+                        $project: {
+                              _id: 0,
+                              book: {
+                                    $map: {
+                                          input: "$borrowedBook",
+                                          as: "book",
+                                          in: {
+                                                title: "$$book.title",
+                                                isbn: "$$book.isbn"
+                                          }
+                                    }
+                              },
+                              totalQuantity: "$quantity"
+                        }
+                  }
+            ])
 
             res.status(200).send({
                   success: true,

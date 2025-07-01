@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import Book from "../modules/book.model";
+import Book from "../models/book.model";
 
 export const bookRoute = Router()
 
@@ -12,7 +12,7 @@ bookRoute.post('/', async (req: Request, res: Response) => {
             // await book.save()
             const book = await Book.create(body)
 
-            res.status(200).send({
+            res.status(201).send({
                   success: true,
                   message: "Book created successfuly",
                   data: book
@@ -36,13 +36,12 @@ bookRoute.get('/', async (req: Request, res: Response) => {
             const query: any = filter ? { genre: filter } : {}
             // sorting ascending and descending by createdAt
             const sortOptions: any = sortBy && typeof sortBy === 'string'
-                  ? { sortBy: sort === 'desc' ? -1 : 1 } : {}
-            // ✅ Safely parse and narrow limit
+                  ? { [sortBy]: sort === 'desc' ? -1 : 1 } : {}
+            // Safely parse and narrow limit
             const limitNum =
                   typeof limit === 'string' && !isNaN(Number(limit))
                         ? parseInt(limit, 10)
                         : undefined;
-
 
             // if query exist then return
             if (filter || sortBy || limitNum !== undefined) {

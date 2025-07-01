@@ -1,7 +1,7 @@
-import { model, Schema } from "mongoose";
-import { IBook } from "../interfaces/book.interface";
+import { Model, model, Schema } from "mongoose";
+import { BookInstanceMethod, IBook } from "../interfaces/book.interface";
 
-const bookSchema = new Schema<IBook>(
+const bookSchema = new Schema<IBook, Model<IBook>, BookInstanceMethod>(
       {
             title: {
                   type: String,
@@ -30,13 +30,12 @@ const bookSchema = new Schema<IBook>(
             },
             isbn: {
                   type: String,
-                  unique: [true, "This isbn number is already exist"],
-                  required: [true, "Isbn number required!"]
+                  unique: [true, "This ISBN number is already exist"],
+                  required: [true, "ISBN number required!"]
             },
             copies: {
                   type: Number,
-                  required: true,
-                  min: [1, "Add minimum copies atleast 1"]
+                  required: true
             },
             available: {
                   type: Boolean,
@@ -47,5 +46,19 @@ const bookSchema = new Schema<IBook>(
       timestamps: true
 })
 
-const Book = model<IBook>("Book", bookSchema)
+// Instance method to reduce copies and update availability
+bookSchema.method("reduceCopies", async function reduceCopies(quantity: number) {
+      // send not available copies enough
+      if (this.copies < quantity) {
+            throw new Error(`Not enough copies available! Available copies: ${this.copies}`);
+      }
+      // substract copies to quantity
+      this.copies -= quantity;
+      // if copies 0 available become false
+      if (this.copies === 0) this.available = false;
+
+      return this.save();
+});
+
+const Book = model("Book", bookSchema)
 export default Book

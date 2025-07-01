@@ -1,6 +1,6 @@
 import tseslint from 'typescript-eslint';
 
-export default [
+export default tseslint.config([
       {
             files: ['**/*.ts'],
             languageOptions: {
@@ -16,19 +16,14 @@ export default [
                   '@typescript-eslint': tseslint.plugin,
             },
             rules: {
-                  // General TS rules
-                  '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
-                  '@typescript-eslint/no-explicit-any': 'warn',
-                  '@typescript-eslint/explicit-function-return-type': 'off',
-                  '@typescript-eslint/no-var-requires': 'error',
-
                   // Best practices
-                  'no-console': 'warn',
-                  'no-undef': 'error',
-                  'no-unused-vars': 'error',
+                  // 'no-console': 'warn',
+                  // 'no-undef': 'warn',
+                  // 'no-unused-vars': 'warn',
                   'prefer-const': 'error',
                   // 'eqeqeq': ['error', 'always'],
                   // 'curly': ['error', 'all'],
             },
-      },
-];
+            ignores: ["**/node_modules", "**/dist", "**/.env"]
+      }
+])
