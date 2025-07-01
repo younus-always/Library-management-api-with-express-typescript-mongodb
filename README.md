@@ -8,13 +8,14 @@ A RESTful API for managing a library system, built using **Express.js**, **TypeS
 
 - [Introduction](#-introduction)
 - [Features](#-features)
-- [Installation](#-installation)
-- [Usage](#-usage)
-- [API Endpoints](#-api-endpoints)
-- [Configuration](#-configuration)
+- [Installation](#%EF%B8%8F-installation)
+- [Usage](#%EF%B8%8F-usage)
+- [API Endpoints](#-api-endpoints-basic-overview)
+- [Query Parameters](#-query-parameters)
+- [Configuration](#%EF%B8%8F-configuration)
 - [Scripts](#-scripts)
-- [Project Structure](#-project-structure)
 - [Dependencies](#-dependencies)
+- [Deployment](#-deployment-to-vercel)
 - [Development](#-development)
 - [License](#-license)
 
@@ -25,6 +26,7 @@ A RESTful API for managing a library system, built using **Express.js**, **TypeS
 This project provides a backend API to manage library resources. It supports functionalities such as:
 
 - Adding, updating, and deleting books
+- Filtering, sorting, and limiting books
 - Tracking borrow records
 - Returning books
 
@@ -38,6 +40,7 @@ Built with TypeScript for better development experience and type safety.
 - 📚 Book and Borrow management
 - 🧠 MongoDB integration with Mongoose
 - ✅ TypeScript support
+- 🔍 Filtering, Sorting, and Pagination
 - ♻️ Dev auto-reloading with `ts-node-dev`
 - 📏 Linting support with ESLint
 
@@ -97,6 +100,25 @@ Note: A detailed API documentation can be added using Swagger or Postman.
 
 - GET /borrow - Get all borrow records
 
+## 🔍 Query Parameters
+
+You can enhance your book queries with the following parameters:
+
+### Example
+
+```bash
+GET /books?filter=fiction&sortBy=createdAt&sort=desc&limit=10
+```
+
+### Parameters
+
+| Parameter | Type     | Description                                  |
+| --------- | -------- | -------------------------------------------- |
+| `filter`  | `string` | Filter books by `genre`                      |
+| `sortBy`  | `string` | Field to sort by (e.g. `createdAt`, `title`) |
+| `sort`    | `string` | Sort order: `asc` (default) or `desc`        |
+| `limit`   | `number` | Limit the number of returned results         |
+
 ## ⚙️ Configuration
 
 Create a .env file at the root of your project:
@@ -137,6 +159,73 @@ MONGO_URI="your_mongodb_connection_string"
 - eslint ^9.30.0 – Linting support
 
 - @eslint/js, @types/express, typescript-eslint – Type & linting helpers
+
+## 🚀 Deployment to Vercel
+
+You can manually deploy this Node.js API to Vercel using the CLI.
+
+### 1. Install Vercel CLI
+
+```bash
+npm install -g vercel
+```
+
+### 2. Login to Vercel (if not already)
+
+   ```bash
+   vercel login
+   ```
+
+Enter your email address and follow the link sent to authenticate.
+
+### 3. Build the project
+
+```bash
+npm run build
+```
+
+This compiles TypeScript files into JavaScript in the dist/ folder.
+
+### 4. Create a vercel.json file
+
+This compiles TypeScript files into JavaScript in the dist/ folder.Create a vercel.json in your project root to configure the deployment:
+
+```
+{
+"version": 2,
+"builds": [
+ {
+   "src": "dist/server.js",
+   "use": "@vercel/node"
+ }
+],
+"routes": [
+ {
+   "src": "/(.*)",
+   "dest": "/dist/server.js"
+ }
+]
+}
+```
+
+This tells Vercel to serve everything from dist/server.js.
+
+### 5. Deploy
+
+Run the following command in your terminal:
+
+```bash
+vercel --prod
+```
+
+Follow the prompts to deploy your project.
+
+## 📝 Tips
+
+- After deploying, you’ll get a live API URL like:
+  https://your-project-name.vercel.app
+
+- All your routes (like /books) will be accessible under this domain.
 
 ## 👨‍💻 Development
 

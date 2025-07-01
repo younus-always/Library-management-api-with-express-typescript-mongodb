@@ -9,6 +9,16 @@ app.use("/api/books/", bookRoute)
 app.use("/api/borrow", borrowRoute)
 
 app.get('/', (req: Request, res: Response) => {
-      res.send("Library Management App")
+      try {
+            res.status(200).send({
+                  success: true,
+                  message: "Welcome to Library Management API Services"
+            })
+      } catch (error: any) {
+            res.status(400).send({
+                  success: true,
+                  message: error.message
+            })
+      }
 })
 export default app
