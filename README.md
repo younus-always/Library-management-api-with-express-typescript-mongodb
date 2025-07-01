@@ -202,7 +202,7 @@ This compiles TypeScript files into JavaScript in the dist/ folder.Create a verc
 "routes": [
  {
    "src": "/(.*)",
-   "dest": "/dist/server.js"
+   "dest": "dist/server.js"
  }
 ]
 }
@@ -223,7 +223,7 @@ Follow the prompts to deploy your project.
 ## 📝 Tips
 
 - After deploying, you’ll get a live API URL like:
-  https://your-project-name.vercel.app
+ [https://your-project-name.vercel.app](https://library-management-backend-api.vercel.app/)
 
 - All your routes (like /books) will be accessible under this domain.
 
