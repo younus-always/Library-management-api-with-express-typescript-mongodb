@@ -80,7 +80,7 @@ bookRoute.get('/:bookId', async (req: Request, res: Response) => {
       }
 })
 // update book
-bookRoute.patch('/:bookId', async (req: Request, res: Response) => {
+bookRoute.put('/:bookId', async (req: Request, res: Response) => {
       try {
             const { bookId } = req.params
             const updatedData = req.body
