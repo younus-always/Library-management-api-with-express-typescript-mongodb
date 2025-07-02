@@ -3,7 +3,6 @@ import Book from "../models/book.model";
 
 export const bookRoute = Router()
 
-
 // create book
 bookRoute.post('/', async (req: Request, res: Response) => {
       try {
@@ -27,25 +26,23 @@ bookRoute.post('/', async (req: Request, res: Response) => {
 })
 // get all books
 bookRoute.get('/', async (req: Request, res: Response) => {
+      const { filter, sortBy, sort, limit } = req.query
+      let books: any = []
+
       try {
-            const { filter, sortBy, sort, limit } = req.query
-
-            let books: any = []
-
             // filter by genre
             const query: any = filter ? { genre: filter } : {}
             // sorting ascending and descending by createdAt
             const sortOptions: any = sortBy && typeof sortBy === 'string'
                   ? { [sortBy]: sort === 'desc' ? -1 : 1 } : {}
             // Safely parse and narrow limit
-            const limitNum =
-                  typeof limit === 'string' && !isNaN(Number(limit))
-                        ? parseInt(limit, 10)
-                        : undefined;
+            const limitNum = typeof limit === 'string' && !isNaN(Number(limit))
+                  ? parseInt(limit)
+                  : 0;
 
             // if query exist then return
-            if (filter || sortBy || limitNum !== undefined) {
-                  books = await Book.find(query).sort(sortOptions).limit(limitNum ?? 0)
+            if (filter || sortBy || limit) {
+                  books = await Book.find(query).sort(sortOptions).limit(limitNum)
             } else {
                   books = await Book.find()
             }

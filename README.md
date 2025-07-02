@@ -172,9 +172,9 @@ npm install -g vercel
 
 ### 2. Login to Vercel (if not already)
 
-   ```bash
-   vercel login
-   ```
+```bash
+vercel login
+```
 
 Enter your email address and follow the link sent to authenticate.
 
@@ -223,7 +223,7 @@ Follow the prompts to deploy your project.
 ## 📝 Tips
 
 - After deploying, you’ll get a live API URL like:
- [https://your-project-name.vercel.app](https://library-management-backend-api.vercel.app/)
+  [https://your-project-name.vercel.app](https://library-management-backend-api.vercel.app/)
 
 - All your routes (like /books) will be accessible under this domain.
 
