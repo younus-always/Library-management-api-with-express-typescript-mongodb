@@ -26,7 +26,7 @@ bookRoute.post('/', async (req: Request, res: Response) => {
 })
 // get all books
 bookRoute.get('/', async (req: Request, res: Response) => {
-      const { filter, sortBy, sort, limit } = req.query
+      const { filter, sortBy, sort, limit, skip } = req.query
       let books: any = []
 
       try {
@@ -39,10 +39,13 @@ bookRoute.get('/', async (req: Request, res: Response) => {
             const limitNum = typeof limit === 'string' && !isNaN(Number(limit))
                   ? parseInt(limit)
                   : 0;
+            const skipNum = typeof skip === 'string' && !isNaN(Number(skip))
+                  ? parseInt(skip)
+                  : 0
 
             // if query exist then return
-            if (filter || sortBy || limit) {
-                  books = await Book.find(query).sort(sortOptions).limit(limitNum)
+            if (filter || sortBy || limit || skip) {
+                  books = await Book.find(query).sort(sortOptions).limit(limitNum).skip(skipNum)
             } else {
                   books = await Book.find()
             }
@@ -100,21 +103,29 @@ bookRoute.put('/:bookId', async (req: Request, res: Response) => {
       }
 })
 // delete book
-bookRoute.delete('/:bookId', async (req: Request, res: Response) => {
+bookRoute.delete("/:bookId", async (req: Request, res: Response) => {
       try {
-            const { bookId } = req.params
-            const book = await Book.findByIdAndDelete(bookId)
+            const { bookId } = req.params;
 
-            res.status(200).send({
-                  success: true,
-                  message: "Book deleted successfuly",
-                  data: book
-            })
+            const book = await Book.findOneAndDelete({ _id: bookId });
+
+            if (!book) {
+                  res.status(404).send({
+                        success: false,
+                        message: "Book not found",
+                  });
+            } else {
+                  res.status(200).send({
+                        success: true,
+                        message: "Book and related borrows deleted successfully",
+                        data: book,
+                  });
+            }
       } catch (error: any) {
             res.status(400).send({
                   success: false,
                   message: error.message,
-                  error
-            })
+                  error,
+            });
       }
-})
+});

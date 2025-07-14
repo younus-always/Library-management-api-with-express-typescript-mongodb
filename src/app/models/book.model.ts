@@ -1,5 +1,6 @@
 import { Model, model, Schema } from "mongoose";
 import { BookInstanceMethod, IBook } from "../interfaces/book.interface";
+import Borrow from "./borrow.model";
 
 const bookSchema = new Schema<IBook, Model<IBook>, BookInstanceMethod>(
       {
@@ -45,6 +46,17 @@ const bookSchema = new Schema<IBook, Model<IBook>, BookInstanceMethod>(
       versionKey: false,
       timestamps: true
 })
+
+// Inside book.model.ts
+bookSchema.pre("findOneAndDelete", async function (next) {
+      const doc = await this.model.findOne(this.getFilter());
+      if (doc) {
+            console.log("Deleting related borrows for book:", doc._id); // ✅ debug
+            await Borrow.deleteMany({ book: doc._id });
+      }
+      next();
+});
+
 
 // Instance method to reduce copies and update availability
 bookSchema.method("reduceCopies", async function reduceCopies(quantity: number) {
